@@ -29,7 +29,15 @@ SOFTWARE.
  * @see http://docs.valencedata.com
  * @see https://developer.intuit.com/app/developer/qbo/docs/get-started
  */
-global with sharing class QuickbooksAdapter {
+global with sharing class QuickbooksAdapter implements valence.NamedCredentialAdapter {
 
+	private String namedCredentialName = null;
 
+	// --------------------------------------------
+	// ---- NamedCredentialAdapter methods --------
+	// --------------------------------------------
+
+	public void setNamedCredential(String namedCredentialName) {
+		this.namedCredentialName = namedCredentialName;
+	}
 }
