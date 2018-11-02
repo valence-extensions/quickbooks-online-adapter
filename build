@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Create the scratch org
+echo "sfdx force:org:create -s -f config/project-scratch-def.json -a qbo -s"
+sfdx force:org:create -s -f config/project-scratch-def.json -a qbo -s
+
+# Install Valence
+echo "sfdx force:package:install --package 04t46000000o1cl -u qbo -w 20"
+sfdx force:package:install --package 04t46000000o1cl -u qbo -w 20
+
+# Push the project into the org
+echo "sfdx force:source:push"
+sfdx force:source:push
+
+# Login and open
+echo "sfdx force:org:open"
+sfdx force:org:open
