@@ -29,7 +29,7 @@ SOFTWARE.
  * @see http://docs.valencedata.com
  * @see https://developer.intuit.com/app/developer/qbo/docs/get-started
  */
-global with sharing class QuickbooksAdapter implements valence.NamedCredentialAdapter, valence.SchemaAdapter, valence.ConfigurableSourceAdapter {
+global with sharing class QuickbooksAdapter implements valence.NamedCredentialAdapter, valence.SchemaAdapter, valence.ConfigurableSourceAdapter, valence.SourceAdapterForPull {
 
 	private String namedCredentialName = null;
 
@@ -189,6 +189,45 @@ global with sharing class QuickbooksAdapter implements valence.NamedCredentialAd
 		catch(Exception e) {
 			throw new valence.AdapterException('Cannot parse the Quickbooks source adapter configuration: ' + configurationData);
 		}
+	}
+
+	// --------------------------------------------
+	// ---- SourceAdapterForPull methods ----------
+	// --------------------------------------------
+
+	/**
+	 * This method helps you to scale seamlessly to fetch large numbers of records. We do this by splitting requests
+	 * out into separate execution contexts, if need be.
+	 *
+	 * Valence will call planFetch() on your Adapter first, and then start calling fetchRecords(). The number of times
+	 * fetchRecords() is called depends on what you return from planFetch(). Every call to fetchRecords() will be in
+	 * its own execution context with a new instance of your Adapter, so you'll lose any state you have in your class.
+	 *
+	 * @param context Information about this Link and the current execution of it.
+	 *
+	 * @return
+	 */
+	public valence.FetchStrategy planFetch(valence.LinkContext context) {
+
+		return valence.FetchStrategy.immediate();
+	}
+
+	/**
+	 * Second, we will call this method sequentially with scopes you gave us in response to planPush(). We give you your
+	 * scope back so you can use it as needed.
+	 *
+	 * If you need to mark errors as failed or warning, use the addError() and addWarning() methods on RecordInFlight.
+	 *
+	 * @param context Information about this Link and the current execution of it.
+	 * @param scope A single scope instance from the List of scopes returned by planFetch()
+	 *
+	 * @return All of the records that have been updated since the timestamp passed inside LinkContext.
+	 */
+	public List<valence.RecordInFlight> fetchRecords(valence.LinkContext context, Object scope) {
+
+		List<valence.RecordInFlight> records = new List<valence.RecordInFlight>();
+
+		return records;
 	}
 
 	/**
