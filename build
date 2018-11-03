@@ -5,8 +5,8 @@ echo "sfdx force:org:create -s -f config/project-scratch-def.json -a qbo -s"
 sfdx force:org:create -s -f config/project-scratch-def.json -a qbo -s
 
 # Install Valence
-echo "sfdx force:package:install --package 04t46000000o1cl -u qbo -w 20"
-sfdx force:package:install --package 04t46000000o1cl -u qbo -w 20
+echo "sfdx force:package:install --package 04t46000002BXF3 -u qbo -w 20"
+sfdx force:package:install --package 04t46000002BXF3 -u qbo -w 20
 
 # Push the project into the org
 echo "sfdx force:source:push"
