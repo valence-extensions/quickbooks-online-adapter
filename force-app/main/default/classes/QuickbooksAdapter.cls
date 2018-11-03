@@ -31,6 +31,9 @@ SOFTWARE.
  */
 global with sharing class QuickbooksAdapter implements valence.NamedCredentialAdapter, valence.SchemaAdapter, valence.ConfigurableSourceAdapter, valence.SourceAdapterForPull {
 
+	/** The expected datetime formatting that the API needs for Datetime literals (ISO 8601) */
+	public final static String API_DATETIME_FORMAT = 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ';
+
 	private String namedCredentialName = null;
 
 	private Configuration config = null;
@@ -58,37 +61,37 @@ global with sharing class QuickbooksAdapter implements valence.NamedCredentialAd
 		 * Quickbook Online doesn't seem to have any sort of discovery endpoint for the entities themselves, so we've hardcoded them here.
 		 */
 		return new List<valence.Table>{
-			valence.Table.create('account').withLabel('Account').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('attachable').withLabel('Attachable').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('bill').withLabel('Bill').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('billpayment').withLabel('Bill Payment').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('budget').withLabel('Budget').withDescription('').setCreateable(false).setUpdateable(false).build(),
-			valence.Table.create('class').withLabel('Class').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('companyinfo').withLabel('Company Info').withDescription('').setCreateable(false).setUpdateable(false).build(),
-			valence.Table.create('creditmemo').withLabel('Credit Memo').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('customer').withLabel('Customer').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('department').withLabel('Department').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('deposit').withLabel('Deposit').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('employee').withLabel('Employee').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('estimate').withLabel('Estimate').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('invoice').withLabel('Invoice').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('item').withLabel('Item').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('journalentry').withLabel('Journal Entry').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('payment').withLabel('Payment').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('paymentmethod').withLabel('Payment Method').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('preferences').withLabel('Preferences').withDescription('').setCreateable(false).setUpdateable(true).build(),
-			valence.Table.create('purchase').withLabel('Purchase').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('purchaseorder').withLabel('Purchase Order').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('refundreceipt').withLabel('Refund Receipt').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('salesreceipt').withLabel('Sales Receipt').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('taxagency').withLabel('Tax Agency').withDescription('').setCreateable(true).setUpdateable(false).build(),
-			valence.Table.create('taxcode').withLabel('Tax Code').withDescription('').setCreateable(false).setUpdateable(false).build(),
-			valence.Table.create('taxrate').withLabel('Tax Rate').withDescription('').setCreateable(false).setUpdateable(false).build(),
-			valence.Table.create('term').withLabel('Term').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('timeactivity').withLabel('Time Activity').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('transfer').withLabel('Transfer').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('vendor').withLabel('Vendor').withDescription('').setCreateable(true).setUpdateable(true).build(),
-			valence.Table.create('vendorcredit').withLabel('Vendor Credit').withDescription('').setCreateable(true).setUpdateable(true).build()
+			valence.Table.create('Account').withLabel('Account').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Attachable').withLabel('Attachable').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Bill').withLabel('Bill').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('BillPayment').withLabel('Bill Payment').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Budget').withLabel('Budget').withDescription('').setCreateable(false).setUpdateable(false).build(),
+			valence.Table.create('Class').withLabel('Class').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('CompanyInfo').withLabel('Company Info').withDescription('').setCreateable(false).setUpdateable(false).build(),
+			valence.Table.create('CreditMemo').withLabel('Credit Memo').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Customer').withLabel('Customer').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Department').withLabel('Department').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Deposit').withLabel('Deposit').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Employee').withLabel('Employee').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Estimate').withLabel('Estimate').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Invoice').withLabel('Invoice').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Item').withLabel('Item').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('JournalEntry').withLabel('Journal Entry').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Payment').withLabel('Payment').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('PaymentMethod').withLabel('Payment Method').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Preferences').withLabel('Preferences').withDescription('').setCreateable(false).setUpdateable(true).build(),
+			valence.Table.create('Purchase').withLabel('Purchase').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('PurchaseOrder').withLabel('Purchase Order').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('RefundReceipt').withLabel('Refund Receipt').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('SalesReceipt').withLabel('Sales Receipt').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('TaxAgency').withLabel('Tax Agency').withDescription('').setCreateable(true).setUpdateable(false).build(),
+			valence.Table.create('TaxCode').withLabel('Tax Code').withDescription('').setCreateable(false).setUpdateable(false).build(),
+			valence.Table.create('TaxRate').withLabel('Tax Rate').withDescription('').setCreateable(false).setUpdateable(false).build(),
+			valence.Table.create('Term').withLabel('Term').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('TimeActivity').withLabel('Time Activity').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Transfer').withLabel('Transfer').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('Vendor').withLabel('Vendor').withDescription('').setCreateable(true).setUpdateable(true).build(),
+			valence.Table.create('VendorCredit').withLabel('Vendor Credit').withDescription('').setCreateable(true).setUpdateable(true).build()
 		};
 	}
 
@@ -227,7 +230,54 @@ global with sharing class QuickbooksAdapter implements valence.NamedCredentialAd
 
 		List<valence.RecordInFlight> records = new List<valence.RecordInFlight>();
 
+		valence.JSONParse response = fetchRecords(context);
+
+		System.debug(LoggingLevel.WARN, response.toStringPretty());
+
+		for(valence.JSONParse item : response.get('QueryResponse.' + context.linkSourceName).asList()) {
+			records.add(new valence.RecordInFlight((Map<String, Object>)item.getValue()));
+		}
+
 		return records;
+	}
+
+	// --------------------------------------------
+	// ---- Helper methods ------------------------
+	// --------------------------------------------
+
+	private valence.JSONParse countRecords(valence.LinkContext context) {
+
+		return queryAPI(context, true);
+	}
+
+	private valence.JSONParse fetchRecords(valence.LinkContext context) {
+
+		return queryAPI(context, false);
+	}
+
+	private valence.JSONParse queryAPI(valence.LinkContext context, Boolean count) {
+
+		HttpRequest req = new HttpRequest();
+		req.setMethod('GET');
+		req.setTimeout(120000);
+		req.setHeader('Accept', 'application/json');
+		req.setEndpoint('callout:' + namedCredentialName + '/v3/company/' + config.realmId + '/query?query=' + buildQuery(context.linkSourceName, context.lastSuccessfulSync, count));
+
+		HttpResponse res = new Http().send(req);
+
+		valence.JSONParse response = new valence.JSONParse(res.getBody());
+
+		return response;
+	}
+
+	private static String buildQuery(String tableName, Datetime lastModified, Boolean count) {
+
+		String query = 'SELECT ' + (count ? 'COUNT(*)' : '*') + ' FROM ' + tableName;
+
+		if(lastModified != null)
+			query += ' WHERE Metadata.LastUpdatedTime >= ' + lastModified.format(API_DATETIME_FORMAT);
+
+		return EncodingUtil.urlEncode(query, 'UTF-8');
 	}
 
 	/**
